@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026-2027 冬期講習 担当可否確認（戸田・立岩先生）</title>
+<style>
+  :root{
+    --bg:#f6f7f9; --card:#fff; --line:#e3e6ea; --ink:#1d2733; --sub:#6b7785;
+    --maru:#1f9d57; --sankaku:#d98a00; --batsu:#d6452f; --accent:#2f6df0;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
+    line-height:1.5;padding-bottom:120px;}
+  .wrap{max-width:680px;margin:0 auto;padding:16px;}
+  h1{font-size:19px;margin:8px 0 2px;}
+  .lead{font-size:13px;color:var(--sub);margin:0 0 16px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:14px;margin-bottom:14px;}
+  .label{font-size:13px;font-weight:600;margin-bottom:8px;}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{padding:9px 18px;border:1px solid var(--line);border-radius:999px;background:#fff;
+    font-size:15px;cursor:pointer;user-select:none;}
+  .chip.on{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .legend{display:flex;gap:14px;font-size:12px;color:var(--sub);margin:2px 0 14px;flex-wrap:wrap;}
+  .legend b{font-weight:700;}
+  .day{background:var(--card);border:1px solid var(--line);border-radius:12px;
+    margin-bottom:12px;overflow:hidden;}
+  .day-head{display:flex;justify-content:space-between;align-items:center;
+    padding:10px 14px;background:#eef1f5;border-bottom:1px solid var(--line);}
+  .day-date{font-weight:700;font-size:15px;}
+  .slot{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #f0f2f4;}
+  .slot:last-child{border-bottom:none;}
+  .slot-info{flex:1;min-width:0;}
+  .slot-time{font-size:14px;font-weight:600;}
+  .slot-meta{font-size:12px;color:var(--sub);}
+  .toggle{display:flex;gap:4px;flex-shrink:0;}
+  .tg{width:38px;height:38px;border:1px solid var(--line);border-radius:9px;background:#fff;
+    font-size:17px;font-weight:700;cursor:pointer;color:#aab2bd;}
+  .tg.on[data-v="maru"]{background:var(--maru);color:#fff;border-color:var(--maru);}
+  .tg.on[data-v="sankaku"]{background:var(--sankaku);color:#fff;border-color:var(--sankaku);}
+  .tg.on[data-v="batsu"]{background:var(--batsu);color:#fff;border-color:var(--batsu);}
+  .empty{padding:30px 14px;text-align:center;color:var(--sub);font-size:14px;}
+  .bar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);
+    padding:12px 16px;}
+  .bar-inner{max-width:680px;margin:0 auto;display:flex;gap:10px;align-items:center;}
+  .count{font-size:13px;color:var(--sub);flex:1;}
+  .btn{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:13px 18px;
+    font-size:15px;font-weight:700;cursor:pointer;}
+  .btn:disabled{background:#b9c2d0;cursor:default;}
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;
+    align-items:flex-end;justify-content:center;z-index:10;}
+  .overlay.show{display:flex;}
+  .sheet{background:#fff;width:100%;max-width:680px;border-radius:16px 16px 0 0;
+    padding:18px;max-height:85vh;overflow:auto;}
+  .sheet h2{font-size:16px;margin:0 0 10px;}
+  textarea{width:100%;min-height:230px;font-size:13px;border:1px solid var(--line);
+    border-radius:9px;padding:12px;font-family:inherit;}
+  .sheet-btns{display:flex;gap:10px;margin-top:12px;}
+  .btn.ghost{background:#eef1f5;color:var(--ink);flex:1;}
+  .btn.solid{flex:2;}
+  #send-msg{font-size:13px;color:var(--sub);margin:10px 0 0;min-height:18px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>2026-2027 冬期講習 担当可否確認（戸田・立岩先生）</h1>
+  <p class="lead">現在未決定となっているコマについて、立岩先生へ担当可否の確認をお願いするフォームです。お名前を選び、各コマを ◯（OK）／△（要相談）／✕（NG）で確定し、最後に「内容を確認」→「送信する」を押してください。</p>
+
+  <div class="card">
+    <div class="label">お名前を選んでください</div>
+    <div class="chips" id="teachers"></div>
+  </div>
+
+  <div class="legend">
+    <span><b style="color:var(--maru)">◯</b> 担当OK（初期値）</span>
+    <span><b style="color:var(--sankaku)">△</b> 要相談</span>
+    <span><b style="color:var(--batsu)">✕</b> 出られない</span>
+  </div>
+
+  <div id="schedule"></div>
+</div>
+
+<div class="bar">
+  <div class="bar-inner">
+    <div class="count" id="count">お名前を選んでください</div>
+    <button class="btn" id="submit" disabled>内容を確認</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="sheet">
+    <h2 id="sheet-title">この内容で送信します</h2>
+    <textarea id="result" readonly></textarea>
+    <div id="send-msg"></div>
+    <div class="sheet-btns">
+      <button class="btn ghost" id="close">閉じる</button>
+      <button class="btn solid" id="send">送信する</button>
+    </div>
+    <button class="btn ghost" id="copy" style="display:none;width:100%;margin-top:10px;">文章をコピー（LINE/メールで送る場合）</button>
+  </div>
+</div>
+
+<script>
+const SLOTS = [
+  ["12/26(土)","9:00～10:40","受験小5","記述読解","立岩"],
+  ["12/26(土)","9:20～10:40","受験小4","算数","立岩"],
+  ["12/26(土)","10:50～12:10","受験小4","記述読解","立岩"],
+  ["12/26(土)","10:50～12:30","受験小5","算数","立岩"],
+  ["12/27(日)","9:20～10:40","受験小4","算数","立岩"],
+  ["12/27(日)","10:50～12:10","受験小4","記述読解","立岩"],
+  ["12/29(火)","9:00～10:40","受験小5","記述読解","立岩"],
+  ["12/29(火)","10:50～12:30","受験小5","算数","立岩"],
+  ["1/4(月)","9:20～10:40","受験小4","算数","立岩"],
+  ["1/4(月)","10:50～12:10","受験小4","記述読解","立岩"],
+  ["1/4(月)","13:30～14:20","小2","算数","立岩"],
+  ["1/4(月)","14:30～15:20","小2","記述読解","立岩"],
+  ["1/4(月)","15:30～16:40","公立小6","算数","立岩"],
+  ["1/4(月)","16:50～18:00","公立小6","記述","立岩"],
+  ["1/5(火)","9:20～10:40","受験小4","算数","立岩"],
+  ["1/5(火)","10:50～12:10","受験小4","記述読解","立岩"],
+  ["1/6(水)","9:00～10:40","受験小5","記述読解","立岩"],
+  ["1/6(水)","10:50～12:30","受験小5","算数","立岩"],
+  ["1/6(水)","15:30～16:40","公立小6","英語","立岩"],
+  ["1/6(水)","16:50～18:00","公立小6","英語","立岩"],
+  ["1/7(木)","9:00～10:40","受験小5","記述読解","立岩"],
+  ["1/7(木)","10:50～12:30","受験小5","算数","立岩"]
+];
+
+const state = {};
+SLOTS.forEach((_, i) => state[i] = "maru");
+
+const TEACHER_ORDER = ["立岩"];
+const teachers = TEACHER_ORDER.filter(t => SLOTS.some(r => r[4] === t));
+let selectedTeacher = null;
+
+const tEl = document.getElementById("teachers");
+teachers.forEach(t => {
+  const c = document.createElement("div");
+  c.className = "chip"; c.textContent = t + " 先生";
+  c.onclick = () => {
+    selectedTeacher = (selectedTeacher === t) ? null : t;
+    [...tEl.children].forEach(ch => ch.classList.remove("on"));
+    if (selectedTeacher) c.classList.add("on");
+    render();
+  };
+  tEl.appendChild(c);
+});
+
+const schedEl = document.getElementById("schedule");
+const countEl = document.getElementById("count");
+const submitEl = document.getElementById("submit");
+
+function myIndexes(){
+  return SLOTS.map((r,i)=>i).filter(i => SLOTS[i][4] === selectedTeacher);
+}
+
+function render(){
+  schedEl.innerHTML = "";
+  if (!selectedTeacher){
+    schedEl.innerHTML = '<div class="empty">お名前を選ぶと、あなたの担当候補コマが表示されます。</div>';
+    countEl.textContent = "お名前を選んでください";
+    submitEl.disabled = true;
+    return;
+  }
+  const idxs = myIndexes();
+  const byDate = {};
+  idxs.forEach(i => { const d = SLOTS[i][0]; (byDate[d] = byDate[d]||[]).push(i); });
+  Object.keys(byDate).forEach(d => {
+    const day = document.createElement("div"); day.className = "day";
+    const head = document.createElement("div"); head.className = "day-head";
+    head.innerHTML = `<span class="day-date">${d}</span>`;
+    day.appendChild(head);
+    byDate[d].forEach(i => {
+      const [_, time, klass, subj] = SLOTS[i];
+      const slot = document.createElement("div"); slot.className = "slot";
+      const meta = subj === klass ? klass : `${klass}・${subj}`;
+      slot.innerHTML = `<div class="slot-info">
+        <div class="slot-time">${time}</div>
+        <div class="slot-meta">${meta}</div></div>`;
+      const tg = document.createElement("div"); tg.className = "toggle";
+      [["maru","◯"],["sankaku","△"],["batsu","✕"]].forEach(([v,sym])=>{
+        const b = document.createElement("button");
+        b.className = "tg" + (state[i]===v?" on":""); b.dataset.v = v; b.textContent = sym;
+        b.onclick = () => { state[i]=v; render(); };
+        tg.appendChild(b);
+      });
+      slot.appendChild(tg); day.appendChild(slot);
+    });
+    schedEl.appendChild(day);
+  });
+  const ng = idxs.filter(i=>state[i]==="batsu").length;
+  const tbd = idxs.filter(i=>state[i]==="sankaku").length;
+  const ok = idxs.length - ng - tbd;
+  countEl.textContent = `◯${ok} / △${tbd} / ✕${ng}（担当候補${idxs.length}コマ）`;
+  submitEl.disabled = false;
+}
+
+function buildText(){
+  const idxs = myIndexes();
+  const ng = idxs.filter(i=>state[i]==="batsu");
+  const tbd = idxs.filter(i=>state[i]==="sankaku");
+  const ok = idxs.filter(i=>state[i]==="maru");
+  const fmt = i => { const r=SLOTS[i]; const meta=r[3]===r[2]?r[2]:`${r[2]}・${r[3]}`; return `${r[0]} ${r[1]} ${meta}`; };
+  let t = `【2026-2027冬期講習 担当可否確認（戸田・立岩先生）】\n`;
+  t += `お名前：${selectedTeacher} 先生\n`;
+  t += `担当候補 全${idxs.length}コマ → ◯${ok.length} / △${tbd.length} / ✕${ng.length}\n\n`;
+  if (ng.length===0 && tbd.length===0){
+    t += `※ すべて担当OKです。`;
+  } else {
+    t += `▼出られない（✕）：${ng.length}コマ\n` + (ng.length? ng.map(fmt).join("\n") : "なし") + "\n\n";
+    t += `▼要相談（△）：${tbd.length}コマ\n` + (tbd.length? tbd.map(fmt).join("\n") : "なし");
+  }
+  return t;
+}
+
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwIQyRkM7Zle7Gv3lDzsiyMm7dPd0Pf6GGK2X5lwS4Hq4tFbc-ahwQvEpQSqa33u9v-/exec";
+
+function buildData(){
+  const idxs = myIndexes();
+  const ng = idxs.filter(i=>state[i]==="batsu");
+  const tbd = idxs.filter(i=>state[i]==="sankaku");
+  const ok = idxs.filter(i=>state[i]==="maru");
+  const fmt = i => { const r=SLOTS[i]; const meta=r[3]===r[2]?r[2]:`${r[2]}・${r[3]}`; return `${r[0]} ${r[1]} ${meta}`; };
+  let detail = "";
+  if (ng.length) detail += "【✕】" + ng.map(fmt).join(" / ");
+  if (tbd.length) detail += (detail?" ／ ":"") + "【△】" + tbd.map(fmt).join(" / ");
+  if (!detail) detail = "すべてOK";
+  return { teacher: selectedTeacher, total: idxs.length, ok: ok.length, tbd: tbd.length, ng: ng.length, detail };
+}
+
+const overlay = document.getElementById("overlay");
+const resultEl = document.getElementById("result");
+const sendBtn = document.getElementById("send");
+const sendMsg = document.getElementById("send-msg");
+const copyBtn = document.getElementById("copy");
+
+function resetSheet(){
+  document.getElementById("sheet-title").textContent = "この内容で送信します";
+  sendMsg.textContent = "";
+  sendBtn.style.display = ""; sendBtn.disabled = false; sendBtn.textContent = "送信する";
+  copyBtn.style.display = "none";
+}
+
+submitEl.onclick = () => { resultEl.value = buildText(); resetSheet(); overlay.classList.add("show"); };
+document.getElementById("close").onclick = () => overlay.classList.remove("show");
+
+sendBtn.onclick = async () => {
+  sendBtn.disabled = true; sendBtn.textContent = "送信中…";
+  try {
+    await fetch(SCRIPT_URL, { method:"POST", mode:"no-cors", body: JSON.stringify(buildData()) });
+    document.getElementById("sheet-title").textContent = "送信が完了しました ✓";
+    sendMsg.textContent = "ありがとうございました。画面を閉じて大丈夫です。";
+    sendBtn.style.display = "none";
+  } catch(e){
+    sendMsg.textContent = "送信に失敗しました。下のボタンで文章をコピーし、LINE/メールで送ってください。";
+    sendBtn.disabled = false; sendBtn.textContent = "もう一度送信";
+    copyBtn.style.display = "";
+  }
+};
+
+copyBtn.onclick = () => {
+  resultEl.select();
+  try { navigator.clipboard.writeText(resultEl.value); } catch(e){ document.execCommand("copy"); }
+  copyBtn.textContent = "コピーしました ✓";
+  setTimeout(()=>copyBtn.textContent="文章をコピー（LINE/メールで送る場合）",1500);
+};
+
+render();
+</script>
+</body>
+</html>
